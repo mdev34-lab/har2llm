@@ -1,8 +1,14 @@
 # har2llm
 
-Tool for processing HAR files.
+Process HAR (HTTP Archive) files into clean, LLM-readable summaries.
 
 ## Installation
+
+```bash
+pip install har2llm
+```
+
+Or for development:
 
 ```bash
 pip install -e .
@@ -10,25 +16,55 @@ pip install -e .
 
 ## Usage
 
-Import in Python:
-
-```python
-from har2llm import process_har
-
-# Process HAR file
-result = process_har('input.har')
-```
-
-Or from the command line:
+### Command Line
 
 ```bash
 har2llm input.har -o output.txt
 ```
 
-## Description
+### Python API
 
-This library provides tools for processing HAR files.
+```python
+from har2llm import process_har
+
+result = process_har('input.har')
+print(result)
+```
 
 ## Features
 
-- HAR file cleaning and compression
+- **Header Filtering**: Removes verbose browser headers (User-Agent, Accept-Encoding, etc.) and extracts only meaningful request headers
+- **URL Simplification**: Replaces UUIDs and numeric IDs with placeholders (`{UUID}`, `{ID}`) to group similar API endpoints
+- **Body Summarization**: Truncates large JSON bodies while preserving structure
+- **Sequence Compression**:合并 consecutive duplicate requests into a single entry with a repeat count
+- **LLM-Optimized Output**: Produces a clean, readable format ideal for feeding to LLMs or for documentation
+
+## Example
+
+Input: A HAR file with 100+ browser requests
+
+Output:
+```
+# GLOBAL HEADERS (Common to 80%+ of requests)
+  authorization: Bearer xxx
+  x-api-key: xxx
+
+# REQUEST LOG
+## GET api.example.com/users/{ID}
+  Query: {"page": 1}
+  <- Response 200: [{"id": 1, "name": "Alice"}... (+49 more items)]
+
+## POST api.example.com/users [Repeated 3x]
+  Headers: {"content-type": "application/json"}
+  Body: {"name": "New User", "email": "user@example.com"}
+  <- Response 201: {"id": 42, "success": true}
+```
+
+## Requirements
+
+- Python 3.9+
+- No external dependencies
+
+## License
+
+MIT
