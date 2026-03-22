@@ -5,12 +5,14 @@ Process HAR (HTTP Archive) files into clean, LLM-readable summaries.
 ## Installation
 
 ```bash
-pip install har2llm
+git clone https://github.com/mdev34-lab/har2llm
+pip install .
 ```
 
 Or for development:
 
 ```bash
+git clone https://github.com/mdev34-lab/har2llm
 pip install -e .
 ```
 
